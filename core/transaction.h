@@ -26,7 +26,9 @@ private:
 
 class Wallet {
 public:
-    explicit Wallet(const std::string &address, double balance = 0);
+    Wallet(const std::string &address, double balance = 0);
+
+    Wallet(const Wallet &other) = delete;
 
     ~Wallet() = default;
 
