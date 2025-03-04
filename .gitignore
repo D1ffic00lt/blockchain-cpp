@@ -1,6 +1,7 @@
 *.Ds_Store
 xtensor-blas/build
 cmake-build-debug
+*.vscode
 # Prerequisites
 *.d
 
