@@ -1,6 +1,6 @@
 #include <iostream>
-#include "core/block.h"
-#include "core/transaction.h"
+#include "core/src/block.h"
+#include "core/src/transaction.h"
 
 int main(int argc, char *argv[]) {
     Block block({Transaction("Alice", "Bob", 10.0)});
