@@ -17,6 +17,7 @@ public:
     [[nodiscard]] std::string getSender() const;
     [[nodiscard]] std::string getReceiver() const;
     [[nodiscard]] double getAmount() const;
+    std::string getDetails() const;
 
 private:
     std::string _from;

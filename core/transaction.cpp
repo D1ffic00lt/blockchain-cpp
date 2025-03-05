@@ -34,6 +34,9 @@ double Wallet::getBalance() const
 {
     return this->_balance;
 }
+std::string Transaction::getDetails() const {
+    return _from + _to + std::to_string(_amount);
+}
 
 Wallet::Wallet(const std::string &address, const double balance) : _address(address), _balance(balance)
 {

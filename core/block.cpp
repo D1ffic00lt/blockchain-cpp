@@ -1,6 +1,13 @@
 #include "block.h"
+#include <openssl/sha.h>
+#include <sstream>
+#include <iomanip>
+#include <string>
 
-Block::Block(const std::initializer_list<Transaction> transactions) : _transactions(transactions) {
+Block::Block(const std::initializer_list<Transaction> transactions)
+    : _transactions(transactions), _nonce(0) {
+    // Initialize _hashPrev and _timestamp as needed
+    computeHash();
 }
 
 const Transactions& Block::getTransactions() const {
@@ -13,6 +20,32 @@ const std::string& Block::getPrevHash() const {
 
 const std::string& Block::getCurrentHash() const {
     return _hashCurrent;
+}
+
+void Block::computeHash() {
+    std::stringstream ss;
+    ss << _hashPrev << _timestamp << _nonce;
+    for (const auto& transaction : _transactions) {
+        ss << transaction.getDetails();
+    }
+
+    std::string data = ss.str();
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256(reinterpret_cast<const unsigned char*>(data.c_str()), data.size(), hash);
+
+    std::stringstream hashString;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+        hashString << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hash[i]);
+    }
+    _hashCurrent = hashString.str();
+}
+
+void Block::mineBlock(int difficulty) {
+    std::string target(difficulty, '0');
+    do {
+        _nonce++;
+        computeHash();
+    } while (_hashCurrent.substr(0, difficulty) != target);
 }
 
 NullBlock::NullBlock() : _hashPrev(nullptr) {
@@ -48,14 +81,11 @@ const Wallet* BlockChain::resolveWallet(const std::string &address, double amoun
     return _wallets.at(address);
 }
 
-
-
 bool BlockChain::approveBlock(Block& block) {
     for (const Transaction &transaction: block.getTransactions()) {
         const Wallet* from = this->resolveWallet(transaction.getSender());
         const Wallet* to = this->resolveWallet(transaction.getReceiver());
         const double amount = transaction.getAmount();
-
     }
     return true;
 }

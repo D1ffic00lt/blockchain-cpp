@@ -4,6 +4,7 @@
 #include <initializer_list>
 #include <deque>
 #include <unordered_map>
+#include <string>
 #include "transaction.h"
 
 typedef std::deque<Transaction> Transactions;
@@ -23,12 +24,16 @@ public:
     const std::string& getPrevHash() const override;
     const std::string& getCurrentHash() const override;
 
+    void mineBlock(int difficulty);
     ~Block() = default;
 
 private:
+    void computeHash();
     Transactions _transactions;
     std::string _hashPrev;
     std::string _hashCurrent;
+    std::string _timestamp;
+    int _nonce;
 };
 
 class NullBlock : public BlockInterface {
@@ -57,7 +62,7 @@ public:
 
 private:
     std::unordered_map<std::string, Wallet*> _wallets;
-    std::deque<Block> _blocks; // Change to store Block objects
+    std::deque<Block> _blocks;
 };
 
 #endif //BLOCK_H
