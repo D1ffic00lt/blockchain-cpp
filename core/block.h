@@ -8,36 +8,41 @@
 
 typedef std::deque<Transaction> Transactions;
 
-
 class BlockInterface {
 public:
-    const Transactions& getTransactions() const;
-
+    virtual ~BlockInterface() = default;
+    virtual const Transactions& getTransactions() const = 0;
+    virtual const std::string& getPrevHash() const = 0;
+    virtual const std::string& getCurrentHash() const = 0;
 };
 
 class Block : public BlockInterface {
 public:
     Block(std::initializer_list<Transaction> transactions);
-    const Transactions& getTransactions() const;
+    const Transactions& getTransactions() const override;
+    const std::string& getPrevHash() const override;
+    const std::string& getCurrentHash() const override;
 
     ~Block() = default;
 
 private:
-
     Transactions _transactions;
     std::string _hashPrev;
-    std::string hashCurrent;
-
-
-};
-
-class NullBlock : public BlockInterface {
-    NullBlock();
-private:
-    void* _hashPrev;
     std::string _hashCurrent;
 };
 
+class NullBlock : public BlockInterface {
+public:
+    NullBlock();
+    const Transactions& getTransactions() const override;
+    const std::string& getPrevHash() const override;
+    const std::string& getCurrentHash() const override;
+
+private:
+    Transactions _transactions;
+    void* _hashPrev;
+    std::string _hashCurrent;
+};
 
 class BlockChain {
 public:
@@ -45,7 +50,6 @@ public:
     ~BlockChain() = default;
 
     void addBlock(const Block &block);
-
     void addWallet(Wallet *wallet);
     bool approveBlock(Block& block);
 
@@ -53,7 +57,7 @@ public:
 
 private:
     std::unordered_map<std::string, Wallet*> _wallets;
-    std::deque<BlockInterface> _blocks;
+    std::deque<Block> _blocks; // Change to store Block objects
 };
 
 #endif //BLOCK_H
